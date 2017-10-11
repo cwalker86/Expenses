@@ -7,11 +7,12 @@ import {
 
 import EnterBudget from './components/EnterBudget';
 import AddExpenses from './components/AddExpenses';
+import CurrentMonthExpenses from './components/CurrentMonthExpenses';
 
 import * as storageMethods from './utils/storage';
 import * as dateMethods from './utils/dates';
 
-export default class Expenses extends Component<{}> {
+export default class Expenses extends Component {
   constructor(props) {
     super();
     
@@ -22,6 +23,7 @@ export default class Expenses extends Component<{}> {
   
   componentWillMount() {
     this.setState({
+      expenses: [],
       month: dateMethods.getMonth(),
       year: dateMethods.getYear(),
     });
@@ -30,7 +32,7 @@ export default class Expenses extends Component<{}> {
   }
   
   renderEnterBudgetComponent() {
-    if(!this.state.budget) {
+    console.log('getting here!');
       this.props.navigator.push({
         component: EnterBudget,
         navigationBarHidden: true,
@@ -39,7 +41,6 @@ export default class Expenses extends Component<{}> {
           saveAndUpdateBudget: (budget) => this.saveAndUpdateBudget(budget)
         }
       });
-    }
   }
   
   async saveAndUpdateBudget(budget) {
@@ -49,24 +50,47 @@ export default class Expenses extends Component<{}> {
   
   async updateBudget() {
     let response = await storageMethods.checkCurrentMonthBudget();
+    // If these is a response
     if (response !== false) {
+      // Set state with the response
       this.setState({
         budget: response
       });
+      // Update Month Expenses
+      this.updateCurrentMonthExpenses();
+      // Return to exit flow.
       return;
     }
+    // Initate the budget screen because there isn't a budget.
     this.renderEnterBudgetComponent();
   }
+  
+  async updateCurrentMonthExpenses () {
+  let responseObject = await storageMethods.getMonthObject(this.state.month, this.state.year);
+
+  if (responseObject) {
+    this.setState({
+      budget: responseObject.budget,
+      expenses: responseObject.expenses,
+      spent: responseObject.spent
+    });
+  }
+}
   
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Your budget is { this.state.budget || 'not set' }!
-        </Text>
+        <CurrentMonthExpenses
+          budget={ this.state.budget || '0' }
+          expenses={ this.state.expenses }
+          month={ this.state.month }
+          spent={ this.state.spent || 0 }
+          year={ this.state.year }
+        />
         <AddExpenses
-          month={this.state.month}
-          year={this.state.year}
+          month={ this.state.month }
+          updateCurrentMonthExpenses={ () => this.updateCurrentMonthExpenses() }
+          year={ this.state.year }
         />
       </View>
     );
@@ -76,8 +100,7 @@ export default class Expenses extends Component<{}> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: 150,
   },
   welcome: {
     fontSize: 20,

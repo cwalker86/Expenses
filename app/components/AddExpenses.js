@@ -16,6 +16,7 @@ import AddExpensesModal from './AddExpensesModal';
 // Exporting AddExpenses as Parent Component.
 export default class AddExpenses extends Component {
   static propTypes = {
+    updateCurrentMonthExpenses: PropTypes.func.isRequired,
     month: PropTypes.string.isRequired,
     year: PropTypes.string.isRequired
   }
@@ -31,6 +32,7 @@ export default class AddExpenses extends Component {
     this.setState({
       modalVisible: !this.state.modalVisible
     });
+    this.props.updateCurrentMonthExpenses();
   }
   
   render() {

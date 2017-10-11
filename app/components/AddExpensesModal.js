@@ -14,6 +14,7 @@ import {
 import moment from 'moment';
 
 import ExpandableCell from './ExpandableCell';
+import * as storageMethods from '../utils/storage';
 
 export default class AddExpensesModal extends Component {
   static propTypes = {
@@ -74,7 +75,7 @@ export default class AddExpensesModal extends Component {
 
     await storageMethods.saveItemToBudget(this.props.month, this.props.year, expenseObject);
 
-    this._clearFieldsAndCloseModal();
+    this.clearFieldsAndCloseModal();
   }
 
   // Set amount and description to empty strings before toggleing modal
@@ -107,7 +108,7 @@ export default class AddExpensesModal extends Component {
             </Text>
             <TextInput
               keyboardType={ 'numeric' }
-              onChangeText={ (value) => this._changeAmount(value) }
+              onChangeText={ (value) => this.updateAmount(value) }
               placeholder={ '0' }
               style={ styles.amountInput }
               value={ this.state.amount }
@@ -117,8 +118,8 @@ export default class AddExpensesModal extends Component {
             Description
           </Text>
           <TextInput
-            onChangeText={ (value) => this._changeDescription(value) }
-            placeholder={ 'Book on React Native development' }
+            onChangeText={ (value) => this.updateDescription(value) }
+            placeholder={ 'React Native Courses' }
             style={ styles.descriptionInput }
             value={ this.state.description }
           />

@@ -112,3 +112,12 @@ export const saveItemToBudget = async (month, year, expenseObject) => {
 
   return true;
 }
+
+// Grabs expenses object from AsyncStorage, checks for year and month, then returns if possible.
+export const getMonthObject = async (month, year) => {
+  let response = await getAsyncStorage();
+
+  if (response[year] && response[year][month]) {
+    return response[year][month];
+  }
+}
