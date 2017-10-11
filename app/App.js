@@ -5,7 +5,10 @@ import {
   View
 } from 'react-native';
 
+import EnterBudget from './components/EnterBudget';
+
 import * as storageMethods from './utils/storage';
+import * as dateMethods from './utils/dates';
 
 export default class Expenses extends Component<{}> {
   constructor(props) {
@@ -15,19 +18,43 @@ export default class Expenses extends Component<{}> {
       budget: undefined
     }
   }
+  
   componentWillMount() {
-    // 1) Check current month's budget and set it in state. If there is no budget, alert user.
-    // storageMethods.checkCurrentMonthBudget()
-    // .then((response) => {
-    //   if(response !== false) {
-    //     this.setState({
-    //       budget: response
-    //     });  
-    //     return;
-    //   }
-    //   alert('Where is your budget for the month?!?!');
-    // });
+    this.setState({
+      month: dateMethods.getMonth(),
+      year: dateMethods.getYear(),
+    });
+    
+    this.updateBudget();
   }
+  
+  renderEnterBudgetComponent() {
+    this.props.navigator.push({
+      component: EnterBudget,
+      navigationBarHidden: true,
+      passProps: {
+        monthString: dateMethods.getMonthString(this.state.month),
+        saveAndUpdateBudget: (budget) => this.saveAndUpdateBudget(budget)
+      }
+    });
+  }
+  
+  async saveAndUpdateBudget(budget) {
+    await storageMethods.saveMonthlyBudget(this.state.month, this.state.year, budget);
+    this.updateBudget();
+  }
+  
+  async updateBudget() {
+    let response = await storageMethods.checkCurrentMonthBudget();
+    if (response !== false) {
+      this.setState({
+        budget: response
+      });
+      return;
+    }
+    this.renderEnterBudgetComponent();
+  }
+  
   render() {
     return (
       <View style={styles.container}>
