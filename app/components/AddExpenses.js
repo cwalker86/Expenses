@@ -40,9 +40,11 @@ export default class AddExpenses extends Component {
           modalVisible={this.state.modalVisible}
           month={this.props.month}
           year={this.props.year}
+          toggleModal={ () => this.toggleModal()}
         />
         <Button
           color={ '#86B2CA' }
+          disabled={this.state.modalVisible}
           onPress={ () => this.toggleModal() }
           title={ 'Add Expense' }
         />

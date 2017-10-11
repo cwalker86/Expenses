@@ -6,7 +6,9 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  View
+  View,
+  ScrollView,
+  Button
 } from 'react-native';
 
 import moment from 'moment';
@@ -17,7 +19,8 @@ export default class AddExpensesModal extends Component {
   static propTypes = {
     modalVisible: PropTypes.bool.isRequired,
     month: PropTypes.string.isRequired,
-    year: PropTypes.string.isRequired
+    year: PropTypes.string.isRequired,
+    toggleModal: PropTypes.func.isRequired
   }
 
   constructor (props) {
@@ -30,6 +33,59 @@ export default class AddExpensesModal extends Component {
       expanded: false
     }
   }
+  
+  updateAmount(amount) {
+    this.setState({
+      amount
+    });
+  }
+
+  updateDescription(description) {
+    this.setState({
+      description
+    });
+  }
+  
+  getDatePickerHeight (event) {
+    this.setState({
+      datePickerHeight: event.nativeEvent.layout.width
+    });
+  }
+
+  onDateChange (date) {
+    this.setState({
+      date
+    });
+  }
+
+  onExpand () {
+    this.setState({
+      expanded: !this.state.expanded
+    });
+  }
+  
+  // Creates an expense object and calls saveItemToBudget from storageMethods
+  async saveItemToBudget () {
+    const expenseObject = {
+      amount: this.state.amount,
+      date: moment(this.state.date).format('ll'),
+      description: this.state.description
+    };
+
+    await storageMethods.saveItemToBudget(this.props.month, this.props.year, expenseObject);
+
+    this._clearFieldsAndCloseModal();
+  }
+
+  // Set amount and description to empty strings before toggleing modal
+  clearFieldsAndCloseModal () {
+    this.setState({
+      amount: '',
+      description: ''
+    });
+
+    this.props.toggleModal()
+  }
 
   // Wraps any component that the Modal displays as children.
   render () {
@@ -41,7 +97,7 @@ export default class AddExpensesModal extends Component {
         transparent={ false }
         visible={ this.props.modalVisible }
       >
-        <View style={ styles.modalContainer }>
+        <ScrollView style={ styles.modalContainer }>
           <Text style={ styles.headerText }>
             Add an Expense
           </Text>
@@ -79,39 +135,20 @@ export default class AddExpensesModal extends Component {
               />
             </ExpandableCell>
           </View>
-        </View>
+          <Button
+            color={ '#86B2CA' }
+            disabled={ !(this.state.amount && this.state.description) }
+            onPress={ () => this.saveItemToBudget() }
+            title={ 'Save Expense' }
+          />
+          <Button
+            color={ '#E85C58' }
+            onPress={ () => this.clearFieldsAndCloseModal() }
+            title={ 'Cancel' }
+          />
+        </ScrollView>
       </Modal>
     )
-  }
-
-  updateAmount(amount) {
-    this.setState({
-      amount
-    });
-  }
-
-  updateDescription(description) {
-    this.setState({
-      description
-    });
-  }
-  
-  getDatePickerHeight (event) {
-    this.setState({
-      datePickerHeight: event.nativeEvent.layout.width
-    });
-  }
-
-  onDateChange (date) {
-    this.setState({
-      date
-    });
-  }
-
-  onExpand () {
-    this.setState({
-      expanded: !this.state.expanded
-    });
   }
 }
 

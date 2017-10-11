@@ -16,7 +16,7 @@ export default class Expenses extends Component<{}> {
     super();
     
     this.state = {
-      budget: undefined
+      budget: null
     }
   }
   
@@ -59,7 +59,6 @@ export default class Expenses extends Component<{}> {
   }
   
   render() {
-    console.log('State: ', this.state);
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
