@@ -30,7 +30,7 @@ export default class Expenses extends Component<{}> {
   }
   
   renderEnterBudgetComponent() {
-    // if(!this.state.budget) {
+    if(!this.state.budget) {
       this.props.navigator.push({
         component: EnterBudget,
         navigationBarHidden: true,
@@ -39,7 +39,7 @@ export default class Expenses extends Component<{}> {
           saveAndUpdateBudget: (budget) => this.saveAndUpdateBudget(budget)
         }
       });
-    // }
+    }
   }
   
   async saveAndUpdateBudget(budget) {
