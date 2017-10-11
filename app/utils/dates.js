@@ -18,6 +18,7 @@ const monthNames = {
 // Grabs current year and returns it as a string
 export const getYear = (date) => {
   date = date || new Date();
+  return date.getFullYear().toString();
 }
 
 // Grabs current month, and returns which number it is as a string

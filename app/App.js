@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 
 import EnterBudget from './components/EnterBudget';
+import AddExpenses from './components/AddExpenses';
 
 import * as storageMethods from './utils/storage';
 import * as dateMethods from './utils/dates';
@@ -29,14 +30,16 @@ export default class Expenses extends Component<{}> {
   }
   
   renderEnterBudgetComponent() {
-    this.props.navigator.push({
-      component: EnterBudget,
-      navigationBarHidden: true,
-      passProps: {
-        monthString: dateMethods.getMonthString(this.state.month),
-        saveAndUpdateBudget: (budget) => this.saveAndUpdateBudget(budget)
-      }
-    });
+    // if(!this.state.budget) {
+      this.props.navigator.push({
+        component: EnterBudget,
+        navigationBarHidden: true,
+        passProps: {
+          monthString: dateMethods.getMonthString(this.state.month),
+          saveAndUpdateBudget: (budget) => this.saveAndUpdateBudget(budget)
+        }
+      });
+    // }
   }
   
   async saveAndUpdateBudget(budget) {
@@ -56,11 +59,16 @@ export default class Expenses extends Component<{}> {
   }
   
   render() {
+    console.log('State: ', this.state);
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
           Your budget is { this.state.budget || 'not set' }!
         </Text>
+        <AddExpenses
+          month={this.state.month}
+          year={this.state.year}
+        />
       </View>
     );
   }
